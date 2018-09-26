@@ -1,12 +1,94 @@
 ---
-title: "hw02"
-output: html_document
+title: "hw02-lh563"
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
-install.packages("gapminder")
 library(gapminder)
 library(tidyverse)
+```
+### Exploring the gapminder dataset
+```{r}
+typeof(gapminder)
+class(gapminder)
+summary(gapminder)
+ncol(gapminder)
+nrow(gapminder)
+dim(gapminder)
+str(gapminder)
+```
+
+## Answers to questions 
+The dataframe is list. The class of gapminder is a dataframe. 6 variables and 1704 rows. By using the function of dim() and str(), you can get the information about the "extent" of the dataframe. str() is very useful in giving the information about class of each object and the type of each variable.
+country&continent:factor
+year&population:integer
+lifeExp&gdpPercap:number
+
+### Explore various plot types
+continent and lifeExp was chosen to be explore more.
+```{r}
+summary(gapminder$continent)
+summary(gapminder$lifeExp)
+
+ggplot(gapminder,aes(continent,pop))+
+  scale_y_log10()+
+  geom_boxplot(aes(fill=continent))+
+  facet_wrap(~continent)+
+  guides(fill=FALSE)#to remove the legend
+
+ggplot(gapminder,aes(lifeExp))+
+  geom_histogram(aes(fill=continent))+
+  geom_density(bw=1)+
+facet_wrap(~continent)+
+  guides(fill=FALSE)#to remove the legend
+
+```
+### Exploring various plots
+two quantitative variables
+This code is to look at the linear regression relationships between gdp and population size in Asia countries in 2007.
+```{r}
+gapminder %>% 
+  filter(continent=="Asia",year=="2007") %>% 
+  select(country,lifeExp,pop,gdpPercap) %>% 
+  arrange(desc(pop)) %>% 
+  ggplot(aes(gdpPercap,pop))+
+  scale_y_log10()+
+  geom_point()+
+  geom_smooth(method="lm")
+
+```
+
+one quantitative variable
+```{r}
+ggplot(gapminder,aes(pop))+
+  scale_x_log10()+
+  geom_histogram(aes(y=..density..),alpha=0.2)+
+  geom_density(color="orange")
+```
+
+one quantitative variable and one categorical
+
+```{r}
+gapminder %>% 
+  filter(continent=="Africa") %>% 
+  ggplot(aes(continent,pop))+
+  scale_y_log10()+
+  geom_violin(color="blue")+
+  geom_jitter(alpha=0.2)
+  
+```
+
+
+### But I want to do more!
+```{r}
+filter(gapminder, country == c("Rwanda", "Afghanistan"))
+filter(gapminder,country=="Rwanda")
+filter(gapminder,country=="Afghanistan")
+```
+Based on the filter of Rwanda or Afghanistan alone, we know that each country has 12 rows of data. But the provided function with both countries provide only 12 rows. So it is not a correct way.
+A "|" in between will give them the correct answer.
+```{r}
+filter(gapminder, country == "Rwanda" | country=="Afghanistan")
 ```
 
 
